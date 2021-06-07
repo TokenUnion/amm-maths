@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
-import { Zero } from "@ethersproject/constants";
+import { WeiPerEther, Zero } from "@ethersproject/constants";
 import { mulBN } from "../../utils";
 import { computeBalanceAfterTrade } from "./computeBalanceAfterTrade";
 
@@ -21,6 +21,11 @@ export const computeBalanceAfterShareSale = (
   computeBalanceAfterTrade(
     initialPoolBalances,
     outcomeIndex,
-    fees !== 1 ? mulBN(returnAmount, 1 / (1 - fees)).mul(-1) : Zero,
+    fees !== 1
+      ? BigNumber.from(returnAmount)
+          .mul(WeiPerEther)
+          .div(WeiPerEther.sub(mulBN(WeiPerEther, fees)))
+          .mul(-1)
+      : Zero,
     BigNumber.from(sharesSoldAmount).mul(-1),
   );
